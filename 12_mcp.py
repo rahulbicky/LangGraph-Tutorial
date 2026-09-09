@@ -1,6 +1,7 @@
 from langgraph.graph import StateGraph, START
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
 from langchain_community.tools import DuckDuckGoSearchRun
 from typing import TypedDict,Annotated
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -12,7 +13,10 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 
 load_dotenv()  # Load environment variables from .env file
 
-llm = ChatOpenAI(model="gpt-5")
+model = ChatGroq(
+    model="openai/gpt-oss-20b",
+    temperature=0
+)
 
 # MCP client for local FastMCP server
 client = MultiServerMCPClient(
@@ -41,7 +45,7 @@ async def build_graph():
 
     print(tools)
 
-    llm_with_tools = llm.bind_tools(tools)
+    llm_with_tools = model.bind_tools(tools)
 
     # nodes
     async def chat_node(state: ChatState):
